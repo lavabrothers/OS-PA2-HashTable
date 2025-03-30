@@ -10,6 +10,12 @@
 
 pthread_rwlock_t rwlock;
 
+void initialize_hash_table() {
+    for (int i = 0; i < HASH_TABLE_SIZE; i++) {
+        hash_table[i] = NULL;
+    }
+}
+
 int main() {
     FILE *cmd_file = fopen(COMMAND_FILE, "r");
     if (!cmd_file) {
@@ -26,7 +32,12 @@ int main() {
 
     pthread_rwlock_init(&rwlock, NULL);
     
-    parse_commands(cmd_file);
+    initialize_hash_table();
+    
+    parse_commands(cmd_file, out_file);
+
+    // Write the hash table to the output file
+    write_hash_table_to_file(out_file);
     
     pthread_rwlock_destroy(&rwlock);
     fclose(cmd_file);

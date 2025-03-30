@@ -1,0 +1,22 @@
+Executing command: threads,10,0
+
+Executing command: insert,Richard Garriot,40000
+
+Executing command: insert,Sid Meier,50000
+
+Executing command: insert,Shigeru Miyamoto,51000
+
+Executing command: delete,Sid Meier,0
+
+Executing command: insert,Hideo Kojima,45000
+
+Executing command: insert,Gabe Newell,49000
+
+Executing command: insert,Roberta Williams,45900
+
+Executing command: delete,Richard Garriot,0
+
+Executing command: insert,Carol Shaw,41000
+
+Executing command: search,Sid Meier,0
+

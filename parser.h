@@ -4,7 +4,6 @@
 
 #include <stdio.h>
 
-void parse_commands(FILE *cmd_file);
+void parse_commands(FILE *cmd_file, FILE *out_file);
 
-
-#endif /* PARSER_H */
+#endif // PARSER_H

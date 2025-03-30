@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Define the hash table
+HashNode *hash_table[HASH_TABLE_SIZE] = {NULL};
+
 static hashRecord *head = NULL;
 extern pthread_rwlock_t rwlock;
 
@@ -31,6 +34,7 @@ void insert(const char *name, uint32_t salary, FILE *out_file) {
             curr->salary = salary;
             pthread_rwlock_unlock(&rwlock);
             fprintf(out_file, "WRITE LOCK RELEASED\n");
+            fflush(out_file);  // Add this line
             return;
         }
         curr = curr->next;
@@ -100,4 +104,18 @@ void print_table(FILE *out_file) {
     
     pthread_rwlock_unlock(&rwlock);
     fprintf(out_file, "READ LOCK RELEASED\n");
+}
+
+void write_hash_table_to_file(FILE *out_file) {
+    pthread_rwlock_rdlock(&rwlock); // Acquire read lock
+
+    for (int i = 0; i < HASH_TABLE_SIZE; i++) {
+        HashNode *node = hash_table[i];
+        while (node) {
+            fprintf(out_file, "%s: %s\n", node->key, node->value);
+            node = node->next;
+        }
+    }
+
+    pthread_rwlock_unlock(&rwlock); // Release read lock
 }
