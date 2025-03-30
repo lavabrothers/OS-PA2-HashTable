@@ -21,7 +21,9 @@ void *execute_command(void *arg) {
     return NULL;
 }
 
-void parse_commands(FILE *cmd_file, FILE *out_file) {
+void parse_commands(FILE *cmd_file) 
+
+    {
     char line[128];
     while (fgets(line, sizeof(line), cmd_file)) {
         char *cmd = strdup(line);

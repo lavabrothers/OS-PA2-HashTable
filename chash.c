@@ -26,7 +26,7 @@ int main() {
 
     pthread_rwlock_init(&rwlock, NULL);
     
-    parse_commands(cmd_file, out_file);
+    parse_commands(cmd_file);
     
     pthread_rwlock_destroy(&rwlock);
     fclose(cmd_file);
