@@ -8,6 +8,13 @@
 // Global hash table head
 static hashRecord *hashTableHead = NULL;
 
+// Get current timestamp in nanoseconds (repeated for consistency)
+static long getNanosecondTimestamp() {
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+    return ts.tv_sec * 1000000000L + ts.tv_nsec;
+}
+
 // Initialize hash table
 void initHashTable() {
     hashTableHead = NULL;
@@ -45,14 +52,10 @@ uint32_t hashFunction(const char *key) {
 // Insert a record into the hash table
 int insertRecord(const char *name, uint32_t salary, FILE *outputFile) {
     uint32_t hash = hashFunction(name);
-    
-    // Get current timestamp
-    struct timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
-    time_t timestamp = ts.tv_sec;
+    long timestamp = getNanosecondTimestamp();
     
     // Log the operation
-    fprintf(outputFile, "%ld,INSERT,%s,%u\n", timestamp, name, salary);
+    fprintf(outputFile, "%ld: INSERT,%u,%s,%u\n", timestamp, hash, name, salary);
     
     // Acquire write lock
     acquireWriteLock(outputFile);
@@ -103,14 +106,10 @@ int insertRecord(const char *name, uint32_t salary, FILE *outputFile) {
 // Delete a record from the hash table
 int deleteRecord(const char *name, FILE *outputFile) {
     uint32_t hash = hashFunction(name);
-    
-    // Get current timestamp
-    struct timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
-    time_t timestamp = ts.tv_sec;
+    long timestamp = getNanosecondTimestamp();
     
     // Log the operation
-    fprintf(outputFile, "%ld,DELETE,%s\n", timestamp, name);
+    fprintf(outputFile, "%ld: DELETE,%s\n", timestamp, name);
     
     // Wait for all insert operations to complete
     waitForInserts(outputFile);
@@ -150,14 +149,10 @@ int deleteRecord(const char *name, FILE *outputFile) {
 // Search for a record in the hash table
 uint32_t searchRecord(const char *name, FILE *outputFile) {
     uint32_t hash = hashFunction(name);
-    
-    // Get current timestamp
-    struct timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
-    time_t timestamp = ts.tv_sec;
+    long timestamp = getNanosecondTimestamp();
     
     // Log the operation
-    fprintf(outputFile, "%ld,SEARCH,%s\n", timestamp, name);
+    fprintf(outputFile, "%ld: SEARCH,%s\n", timestamp, name);
     
     // Acquire read lock
     acquireReadLock(outputFile);
@@ -182,7 +177,7 @@ uint32_t searchRecord(const char *name, FILE *outputFile) {
     releaseReadLock(outputFile);
     
     // Record not found
-    fprintf(outputFile, "No Record Found\n");
+    fprintf(outputFile, "%ld: SEARCH: NOT FOUND NOT FOUND\n", getNanosecondTimestamp());
     return 0;
 }
 

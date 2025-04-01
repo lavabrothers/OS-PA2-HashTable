@@ -8,6 +8,13 @@
 #include "rw_lock.h"
 #include "command_processor.h"
 
+// Get current timestamp in nanoseconds
+static long getNanosecondTimestamp() {
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+    return ts.tv_sec * 1000000000L + ts.tv_nsec;
+}
+
 int main() {
     FILE *cmdFile = fopen("commands.txt", "r");
     if (!cmdFile) {
@@ -35,6 +42,9 @@ int main() {
         sscanf(line, "%[^,],%d,%d", cmd, &numThreads, &dummy);
         
         if (strcmp(cmd, "threads") == 0) {
+            // Print thread count
+            fprintf(outputFile, "Running %d threads\n", numThreads);
+            
             // Create command array
             Command *commands = (Command *)malloc(numThreads * sizeof(Command));
             
@@ -60,9 +70,12 @@ int main() {
                 pthread_join(threads[i], NULL);
             }
             
+            // Print that all threads are finished
+            fprintf(outputFile, "Finished all threads.\n");
+            
             // Print final summary
-            fprintf(outputFile, "\nNumber of lock acquisitions: %d\n", getLockAcquisitionCount());
-            fprintf(outputFile, "Number of lock releases: %d\n", getLockReleaseCount());
+            fprintf(outputFile, "Number of lock acquisitions:  %d\n", getLockAcquisitionCount());
+            fprintf(outputFile, "Number of lock releases:  %d\n", getLockReleaseCount());
             
             // Print final hash table contents
             printHashTable(outputFile);

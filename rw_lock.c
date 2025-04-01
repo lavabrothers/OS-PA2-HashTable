@@ -36,35 +36,36 @@ void destroyRWLock() {
     pthread_cond_destroy(&deleteCond);
 }
 
-// Acquire read lock
-void acquireReadLock(FILE *outputFile) {
+// Get current timestamp in nanoseconds
+long getNanosecondTimestamp() {
     struct timespec ts;
     clock_gettime(CLOCK_REALTIME, &ts);
-    time_t timestamp = ts.tv_sec;
+    return ts.tv_sec * 1000000000L + ts.tv_nsec;
+}
+
+// Acquire read lock
+void acquireReadLock(FILE *outputFile) {
+    long timestamp = getNanosecondTimestamp();
     
-    fprintf(outputFile, "%ld,READ LOCK ACQUIRED\n", timestamp);
+    fprintf(outputFile, "%ld: READ LOCK ACQUIRED\n", timestamp);
     pthread_rwlock_rdlock(&rwlock);
     lockAcquisitionCount++;
 }
 
 // Release read lock
 void releaseReadLock(FILE *outputFile) {
-    struct timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
-    time_t timestamp = ts.tv_sec;
+    long timestamp = getNanosecondTimestamp();
     
     pthread_rwlock_unlock(&rwlock);
-    fprintf(outputFile, "%ld,READ LOCK RELEASED\n", timestamp);
+    fprintf(outputFile, "%ld: READ LOCK RELEASED\n", timestamp);
     lockReleaseCount++;
 }
 
 // Acquire write lock
 void acquireWriteLock(FILE *outputFile) {
-    struct timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
-    time_t timestamp = ts.tv_sec;
+    long timestamp = getNanosecondTimestamp();
     
-    fprintf(outputFile, "%ld,WRITE LOCK ACQUIRED\n", timestamp);
+    fprintf(outputFile, "%ld: WRITE LOCK ACQUIRED\n", timestamp);
     pthread_rwlock_wrlock(&rwlock);
     lockAcquisitionCount++;
     
@@ -76,12 +77,10 @@ void acquireWriteLock(FILE *outputFile) {
 
 // Release write lock
 void releaseWriteLock(FILE *outputFile) {
-    struct timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
-    time_t timestamp = ts.tv_sec;
+    long timestamp = getNanosecondTimestamp();
     
     pthread_rwlock_unlock(&rwlock);
-    fprintf(outputFile, "%ld,WRITE LOCK RELEASED\n", timestamp);
+    fprintf(outputFile, "%ld: WRITE LOCK RELEASED\n", timestamp);
     lockReleaseCount++;
     
     // Signal delete operations if an insert operation is completed
@@ -100,17 +99,14 @@ void waitForInserts(FILE *outputFile) {
     if (insertCount > 0) {
         deleteWaiting++;
         
-        struct timespec ts;
-        clock_gettime(CLOCK_REALTIME, &ts);
-        long timestamp = ts.tv_sec * 1000000000L + ts.tv_nsec;
-        
+        long timestamp = getNanosecondTimestamp();
         fprintf(outputFile, "%ld: WAITING ON INSERTS\n", timestamp);
+        
         pthread_cond_wait(&deleteCond, &deleteMutex);
         
-        clock_gettime(CLOCK_REALTIME, &ts);
-        timestamp = ts.tv_sec * 1000000000L + ts.tv_nsec;
-        
+        timestamp = getNanosecondTimestamp();
         fprintf(outputFile, "%ld: DELETE AWAKENED\n", timestamp);
+        
         deleteWaiting--;
     }
     
