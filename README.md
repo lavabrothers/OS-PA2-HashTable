@@ -12,4 +12,4 @@ Fix ordering and make it use nanosecond time. the output is formatted as
 <timestamp>,<COMMAND>,Name,Salary
 
 
-After we finished the code, we used ChatGPT 4o to make test cases to make sure our code doesnt have issues 
+After we finished the code, we used ChatGPT o3-mini to make test cases to make sure our code doesnt have issues 
