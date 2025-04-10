@@ -13,3 +13,5 @@ Fix ordering and make it use nanosecond time. the output is formatted as
 
 
 After we finished the code, we used ChatGPT o3-mini to make test cases to make sure our code doesnt have issues 
+Conversation:
+https://chatgpt.com/share/67f858cc-b488-8005-a100-7d5d4cdb9c90
