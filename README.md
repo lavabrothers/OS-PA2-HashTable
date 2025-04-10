@@ -10,3 +10,6 @@ Using the code provided here is it's output
 *attached output.txt*
 Fix ordering and make it use nanosecond time. the output is formatted as
 <timestamp>,<COMMAND>,Name,Salary
+
+
+After we finished the code, we used ChatGPT 4o to make test cases to make sure our code doesnt have issues 
